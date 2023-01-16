@@ -1,0 +1,59 @@
+{
+   "deck_name":"Test",
+   "cards":[
+      {
+         "title":"move 1",
+         "card_type":"movement",
+         "cost":1,
+         "effects":{
+            "move":1
+         },
+         "description":"move"
+      },
+      {
+         "title":"attack 1",
+         "card_type":"attack",
+         "cost":1,
+         "effects":{
+            "attack":1
+         },
+         "description":"attack"
+      },
+      {
+         "title":"move 1",
+         "card_type":"movement",
+         "cost":1,
+         "effects":{
+            "move":1
+         },
+         "description":"move"
+      },
+      {
+         "title":"attack 1",
+         "card_type":"attack",
+         "cost":1,
+         "effects":{
+            "attack":1
+         },
+         "description":"attack"
+      },
+      {
+         "title":"move 1",
+         "card_type":"movement",
+         "cost":1,
+         "effects":{
+            "move":1
+         },
+         "description":"move"
+      },
+      {
+         "title":"attack 1",
+         "card_type":"attack",
+         "cost":1,
+         "effects":{
+            "attack":1
+         },
+         "description":"attack"
+      }
+   ]
+}
