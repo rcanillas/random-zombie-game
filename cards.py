@@ -46,7 +46,7 @@ class Card:
             if effect_key=="move":
                 # TODO: select target tile here
                 tile_choices = map.tileset[max(source.position.position-effect_potency,0):source.position.position] + map.tileset[source.position.position+1:min(map.size-1,source.position.position+effect_potency)+1] 
-                print(f"{source.name} can move to: ",[f{t.position} for t in tile_choices])
+                print(f"{source.name} can move to: ",[f"{t.position}" for t in tile_choices])
                 tile_idx = int(input(f"Select target tile: "))
                 #target_tile = random.choice(tile_choices)
                 target_tile = map.tileset[tile_idx]
