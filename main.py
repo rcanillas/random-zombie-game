@@ -1,13 +1,13 @@
 import pygame
 import random
 
-from characters import PlayableCharacter, Zombie
+from characters import PlayableCharacter
 from cards import get_target_tiles
 from map import Map
 
 def get_playable_cards(hand, player, map):
     i = 1
-    print(f"Cards to play (remaining AP:{player.action_points}):")
+    print(f"Cards to play (remaining AP:{player.action_points}) (loot modifer: {player.position.loot_modifier}):")
     for card in hand:
         card.is_playable = True
         if card.card_type == "movement":
@@ -22,6 +22,9 @@ def get_playable_cards(hand, player, map):
                 card.is_playable = True
             else:
                 card.is_playable = False
+        elif card.card_type == "loot":
+            if player.position.z_count > 0:
+                card.is_playable = False
         if card.current_cost > player.action_points:
             card.is_playable = False
         print(f"{i} - {card.title} ({card.current_cost} ap (base {card.base_cost})): {card.description} ({card.card_id}) - playable:{card.is_playable}")
@@ -34,7 +37,6 @@ player = PlayableCharacter(name="Darryl", health_points=3, action_points=0, posi
 player.deck.load_deck_from_json("decks/test.json")
 player.deck.show()
 #zombie = Zombie(name="Patient Zero", position=map.tileset[map.size-1])
-zombie_list = []
 i = 1
 while player.is_alive:
     print(f"Turn {i} - Player turn")
@@ -62,13 +64,12 @@ while player.is_alive:
         print("No more AP.")
     player.action_points = 0
     print(f"Turn {i} - Zombies turn")
-    for zombie in zombie_list:
+    for zombie in map.zombie_list:
         if zombie.is_alive:
             zombie.perform_action(map)
-            #zombie.show()
         else:
-            zombie_list.remove(zombie)
-    zombie_list += map.spawn_zombies()
+            map.zombie_list.remove(zombie)
+    map.spawn_zombies()
     i+=1
     if i == 5:
         break

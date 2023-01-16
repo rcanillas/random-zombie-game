@@ -1,6 +1,8 @@
 import json
 import random
 
+import loot
+
 random.seed=42
 
 def get_target_tiles(map, source):
@@ -21,6 +23,7 @@ class Card:
 
     def activate(self, source, map):
         for effect_key, effect_potency in self.effects.items():
+            
             if effect_key == "attack":
                 # TODO: select target tile here
                 target_tiles = get_target_tiles(map, source)
@@ -35,7 +38,7 @@ class Card:
                         break
                 """
                 #print(f"Target tile is Tile {target_tile.position}")
-                for attack in range(effect_potency):
+                for _ in range(effect_potency):
                     potential_targets = [t for t in target_tile.contains if t.character_type =="z"]
                     if len(potential_targets) > 0:
                         target = random.choice(potential_targets)
@@ -43,6 +46,7 @@ class Card:
                         target.lose_hp(1)
                     else: 
                         print("attack misses !")
+            
             if effect_key=="move":
                 # TODO: select target tile here
                 tile_choices = map.tileset[max(source.position.position-effect_potency,0):source.position.position] + map.tileset[source.position.position+1:min(map.size-1,source.position.position+effect_potency)+1] 
@@ -52,6 +56,15 @@ class Card:
                 target_tile = map.tileset[tile_idx]
                 print(f"{source.name} is moving to Tile {target_tile.position}")
                 source.move(effect_potency, target_tile, map)
+
+            if effect_key=="loot":
+                effect_modifier = source.position.loot_modifier
+                loot_time = max(0, effect_potency+effect_modifier)
+                if loot_time > 0:
+                    for _ in range(loot_time):
+                        loot.get_loot(source, map)
+                else :
+                    print("Nothing to find here...")
         source.deck.discard_card(self)
 
 class Deck:

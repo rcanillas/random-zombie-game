@@ -5,6 +5,8 @@ DEFAULT_HANDSIZE = 5
 DEFAULT_ARMOR = 0
 DEFAULT_P_AP = 3
 DEFAULT_P_HP = 3
+DEFAULT_INV_SIZE = 4
+
 DEFAULT_Z_ATTACK = 1
 DEFAULT_Z_MOVE = 1
 DEFAULT_Z_HP = 1
@@ -49,6 +51,8 @@ class PlayableCharacter(Actor):
         self.handsize = DEFAULT_HANDSIZE
         self.character_type = "p"
         self.position.append(self)
+        self.inventory = []
+        self.inventory_size = DEFAULT_INV_SIZE
 
     def replenish_ap(self, ap):
         self.action_points += ap

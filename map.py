@@ -3,6 +3,7 @@ import random
 
 DEFAULT_MAP_SIZE = 6
 DEFAULT_NB_SPAWN = 2 
+DEFAULT_LOOT_MALUS = 2
 
 
 class Tile:
@@ -12,6 +13,7 @@ class Tile:
         self.is_exit = False
         self.contains = []
         self.z_count = 0
+        self.loot_modifier = 0
 
     def remove(self, actor):
         self.contains.remove(actor)
@@ -28,16 +30,22 @@ class Map:
         self.size = size
         self.tileset = [Tile(pos) for pos in range(size)]
         self.orientation = orientation
+        self.zombie_list = []
         if orientation=="right":
             self.tileset[0].is_exit = True
             for i in range(1, DEFAULT_NB_SPAWN+1):
                 self.tileset[size-i].is_spawn = True
+            for tile in self.tileset:
+                tile.loot_modifier = tile.position - DEFAULT_LOOT_MALUS
         else:
             self.tileset[size].is_exit = True
             for i in range(0, DEFAULT_NB_SPAWN-1):
                 self.tileset[i].is_spawn = True
+            for tile in self.tileset:
+                tile.loot_modifier = size - tile.position  - DEFAULT_LOOT_MALUS
         self.danger_meter = 0
         self.global_z_count = 0
+
 
     def update_position(self, actor, steps):
         actor.position.remove(actor)
@@ -63,7 +71,6 @@ class Map:
         return player_tile, player
 
     def spawn_zombies(self):
-        zombie_list = []
         spawn_tiles = [tile for tile in self.tileset if tile.is_spawn==True]
         print("Spawning tiles are " + str([t.position for t in spawn_tiles]))
         if self.danger_meter == 0:
@@ -71,7 +78,7 @@ class Map:
         else:        
             nb_spawned_zombies = random.randint(1,6) * self.danger_meter
         print(f"{nb_spawned_zombies} zombies have spawned.")
-        for z in range(0, nb_spawned_zombies):
+        for _ in range(0, nb_spawned_zombies):
             min_zombies = min([t.z_count for t in spawn_tiles])
             min_tiles = []
             for prospect_spawn_tile in spawn_tiles:
@@ -91,6 +98,12 @@ class Map:
             new_zombie = Zombie(f"zombie {self.global_z_count}", spawn_tile)
             print(f"{new_zombie.name} is spawning on Tile {spawn_tile.position}")
             self.global_z_count += 1
-            zombie_list.append(new_zombie)
+            self.zombie_list.append(new_zombie)
         print([f"{t.position}-Z:{t.z_count}-P:{0 if len([p for p in t.contains if p.character_type=='p'])==0 else 1}" for t in self.tileset])
-        return zombie_list
+        return self.zombie_list
+    
+    def spawn_zombie(self, tile):
+        new_zombie = Zombie(f"zombie {self.global_z_count}", tile)
+        self.zombie_list.append(new_zombie)
+        self.global_z_count += 1
+        return new_zombie

@@ -38,22 +38,22 @@
          "description":"attack"
       },
       {
-         "title":"move 1",
-         "card_type":"movement",
+         "title":"loot 1",
+         "card_type":"loot",
          "cost":1,
          "effects":{
-            "move":1
+            "loot":1
          },
-         "description":"move"
+         "description":"loot"
       },
       {
-         "title":"attack 1",
-         "card_type":"attack",
+         "title":"loot 1",
+         "card_type":"loot",
          "cost":1,
          "effects":{
-            "attack":1
+            "loot":1
          },
-         "description":"attack"
+         "description":"loot"
       }
    ]
 }
