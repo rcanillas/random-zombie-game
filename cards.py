@@ -62,17 +62,24 @@ class Card:
                 loot_time = max(0, effect_potency+effect_modifier)
                 if loot_time > 0:
                     for _ in range(loot_time):
-                        loot.get_loot(source, map)
+                        if loot.get_loot(source, map):
+                            print("looting is interrupted !")
+                            break
                 else :
                     print("Nothing to find here...")
 
             if effect_key=="noise":
                 map.danger_meter += 1
+
+            if effect_key=="exit":
+                map.player_exit = True
+                print(f"{source.name} is leaving !")
             
         source.deck.discard_card(self)
 
 class Deck:
     def __init__(self) -> None:
+        self.deck_size = 0
         self.available_cards = []
         self.discarded_cards = []
         self.burned_cards = []
@@ -89,6 +96,7 @@ class Deck:
                             effects=json_card["effects"],
                             description=json_card["description"])
             self.available_cards.append(new_card)
+            self.deck_size += 1
 
     def show(self):
         print(f"Deck {self.deck_name}:")
@@ -101,13 +109,13 @@ class Deck:
 
     def draw(self, handsize):
         drawn_cards = []
-        if handsize > len(self.available_cards) + len(self.discarded_cards):
-            handsize = len(self.available_cards) + len(self.discarded_cards)
+        if handsize > self.deck_size:
+            handsize = self.deck_size
         if handsize <= len(self.available_cards):
             drawn_cards =  random.sample(self.available_cards,k=handsize)
         else:
             print("redrawing")
-            drawn_cards = random.sample(self.available_cards,k=min(len(self.available_cards),len(self.available_cards)))
+            drawn_cards = random.sample(self.available_cards,k=len(self.available_cards))
             left_to_draw = handsize-len(self.available_cards)
             self.available_cards = self.available_cards + self.discarded_cards.copy()
             self.discarded_cards = []
@@ -124,3 +132,9 @@ class Deck:
             self.burned_cards.append(card)
         else:
             self.discarded_cards.append(card)
+
+    def get_exit_card(self):
+        exit_card = Card(card_id=self.deck_size,card_type="move",title="Exit",cost=0, effects={"exit":1}, description="Get out of here !")
+        exit_card.is_burnt == True
+        self.available_cards.append(exit_card)
+        return exit_card

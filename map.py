@@ -31,6 +31,7 @@ class Map:
         self.tileset = [Tile(pos) for pos in range(size)]
         self.orientation = orientation
         self.zombie_list = []
+        self.player_exit = False
         if orientation=="right":
             self.tileset[0].is_exit = True
             for i in range(1, DEFAULT_NB_SPAWN+1):
@@ -73,9 +74,9 @@ class Map:
     def spawn_zombies(self):
         spawn_tiles = [tile for tile in self.tileset if tile.is_spawn==True]
         print("Spawning tiles are " + str([t.position for t in spawn_tiles]))
-        if self.danger_meter <= 1:
+        if self.danger_meter <= 3:
             nb_spawned_zombies = random.randint(1,3)
-        elif 2 < self.danger_meter <= 5:        
+        elif 3 < self.danger_meter <= 8:        
             nb_spawned_zombies = random.randint(1,6)
         else:
             nb_spawned_zombies = 2*random.randint(1,6)

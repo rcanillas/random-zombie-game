@@ -16,6 +16,8 @@ def get_loot(actor, map):
                 actor.inventory.append(loot)
             else: 
                 print(f"{loot} is discarded.")
+            return False
     elif loot == "zombie":
         new_zombie = map.spawn_zombie(actor.position)
         print(f"Bad surprise ! {new_zombie.name} surprises {actor.name} while looting !")
+        return True
