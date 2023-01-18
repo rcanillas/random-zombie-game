@@ -65,6 +65,10 @@ class Card:
                         loot.get_loot(source, map)
                 else :
                     print("Nothing to find here...")
+
+            if effect_key=="noise":
+                map.danger_meter += 1
+            
         source.deck.discard_card(self)
 
 class Deck:

@@ -2,20 +2,22 @@
    "deck_name":"Test",
    "cards":[
       {
-         "title":"move 1",
+         "title":"Rush",
          "card_type":"movement",
          "cost":1,
          "effects":{
-            "move":1
+            "move":2,
+            "noise":1
          },
-         "description":"move"
+         "description":"Rush up to 2 tiles. Make noise."
       },
       {
          "title":"attack 1",
          "card_type":"attack",
          "cost":1,
          "effects":{
-            "attack":1
+            "attack":1,
+            "noise":1
          },
          "description":"attack"
       },
@@ -33,7 +35,8 @@
          "card_type":"attack",
          "cost":1,
          "effects":{
-            "attack":1
+            "attack":1,
+            "noise":1
          },
          "description":"attack"
       },
@@ -47,11 +50,12 @@
          "description":"loot"
       },
       {
-         "title":"loot 1",
+         "title":"Noisy loot",
          "card_type":"loot",
          "cost":1,
          "effects":{
-            "loot":1
+            "loot":2,
+            "noise":1
          },
          "description":"loot"
       }

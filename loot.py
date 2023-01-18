@@ -1,5 +1,5 @@
 import random
-loot_rolls = {"scrap":65, "food":15, "gas":15, "zombie":5}
+loot_rolls = {"scrap":75, "food":10, "gas":10, "zombie":5}
 def get_loot(actor, map):
     loot = random.choices([k for k in loot_rolls.keys()], [v for v in loot_rolls.values()],k=1)[0]
     if loot == "scrap" or loot == "food" or loot == "gas":

@@ -73,10 +73,12 @@ class Map:
     def spawn_zombies(self):
         spawn_tiles = [tile for tile in self.tileset if tile.is_spawn==True]
         print("Spawning tiles are " + str([t.position for t in spawn_tiles]))
-        if self.danger_meter == 0:
+        if self.danger_meter <= 1:
             nb_spawned_zombies = random.randint(1,3)
-        else:        
-            nb_spawned_zombies = random.randint(1,6) * self.danger_meter
+        elif 2 < self.danger_meter <= 5:        
+            nb_spawned_zombies = random.randint(1,6)
+        else:
+            nb_spawned_zombies = 2*random.randint(1,6)
         print(f"{nb_spawned_zombies} zombies have spawned.")
         for _ in range(0, nb_spawned_zombies):
             min_zombies = min([t.z_count for t in spawn_tiles])
@@ -99,7 +101,7 @@ class Map:
             print(f"{new_zombie.name} is spawning on Tile {spawn_tile.position}")
             self.global_z_count += 1
             self.zombie_list.append(new_zombie)
-        print([f"{t.position}-Z:{t.z_count}-P:{0 if len([p for p in t.contains if p.character_type=='p'])==0 else 1}" for t in self.tileset])
+        print(f"D: {self.danger_meter}",[f"{t.position}-Z:{t.z_count}-P:{0 if len([p for p in t.contains if p.character_type=='p'])==0 else 1}" for t in self.tileset])
         return self.zombie_list
     
     def spawn_zombie(self, tile):
