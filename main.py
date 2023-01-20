@@ -2,7 +2,7 @@ import pygame
 import random
 
 from characters import PlayableCharacter
-from cards import get_target_tiles
+from cards import get_melee_target_tiles, get_ranged_target_tiles
 from map import Map
 
 MIN_TURN_COUNT = 3
@@ -18,9 +18,19 @@ def get_playable_cards(hand, player, map, turn_count):
         if card.card_type == "movement":
             card.current_cost = card.base_cost
             card.current_cost += player.position.z_count
-        elif card.card_type == "attack":
+        elif card.card_type == "melee_attack":
             z_found = False
-            for tile in get_target_tiles(map, player):
+            for tile in get_melee_target_tiles(map, player):
+                if tile.z_count>0:
+                    z_found = True  
+            if z_found:
+                card.is_playable = True
+            else:
+                card.is_playable = False
+        elif card.card_type== "ranged_attack":
+            z_found = False
+            range = card.effects["ranged_attack"]["range"]
+            for tile in get_ranged_target_tiles(map, player, range):
                 if tile.z_count>0:
                     z_found = True  
             if z_found:
@@ -30,16 +40,22 @@ def get_playable_cards(hand, player, map, turn_count):
         elif card.card_type == "loot":
             if player.position.z_count > 0:
                 card.is_playable = False
+        elif card.card_type == "heal":
+            if player.health_points >= player.max_health_points:
+                card.is_playable = False
         if card.current_cost > player.action_points:
             card.is_playable = False
         print(f"{i} - {card.title} ({card.current_cost} ap (base {card.base_cost})): {card.description} ({card.card_id}) - playable:{card.is_playable}")
         i += 1
+        
     return [c for c in hand if c.is_playable]
 
 pygame.init()
 map = Map()
 player = PlayableCharacter(name="Darryl", health_points=3, action_points=0, position=map.tileset[0])
-player.deck.load_deck_from_json("decks/test.json")
+player.deck.load_deck_from_json("decks/skills_survivor.json")
+player.equip_weapon("baseball bat", "decks/weapon_baseballbat.json")
+player.equip_weapon("pistol", "decks/weapon_pistol.json")
 player.deck.show()
 #zombie = Zombie(name="Patient Zero", position=map.tileset[map.size-1])
 turn_count = 1

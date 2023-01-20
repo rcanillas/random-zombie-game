@@ -5,8 +5,39 @@ import loot
 
 random.seed=42
 
-def get_target_tiles(map, source):
+def get_melee_target_tiles(map, source):
     return map.tileset[max(source.position.position-1,0):min(map.size-1,source.position.position+1)+1]
+
+def get_ranged_target_tiles(map, source, range):
+    return map.tileset[max(source.position.position-range,0):source.position.position] + map.tileset[source.position.position+1:min(map.size-1,source.position.position+range)+1] 
+
+def try_attack(source, target, hit_chance):
+    hit_roll = random.random()
+    #print(hit_roll, hit_chance/100)
+    if random.random() <= hit_chance/100:      
+        print(f"{source.name} performs an attack on {target.name} !")
+        target.lose_hp(1)
+    else:
+        print(f"Attack missed !")
+        
+def get_cards_from_json(json_deck_path):
+        card_list = []
+        with open(json_deck_path) as json_deck_file:
+            json_deck = json.load(json_deck_file)
+        deck_name = json_deck["deck_name"]
+        print(f"loading deck {deck_name}")
+        for card_id, json_card in enumerate(json_deck["cards"]):
+            new_card = Card(card_id=card_id,
+                            title=json_card["title"],
+                            card_type=json_card["card_type"],
+                            cost=json_card["cost"],
+                            effects=json_card["effects"],
+                            description=json_card["description"])
+            if "is_burnt" in json_card.keys():
+                new_card.is_burnt = json_card["is_burnt"]
+            card_list.append(new_card)
+        return card_list
+
 
 class Card:
     def __init__(self, card_id, card_type,title, cost, effects, description) -> None:
@@ -23,33 +54,36 @@ class Card:
 
     def activate(self, source, map):
         for effect_key, effect_potency in self.effects.items():
-            
-            if effect_key == "attack":
-                # TODO: select target tile here
-                target_tiles = get_target_tiles(map, source)
+
+            if effect_key == "melee_attack":
+                target_tiles = get_melee_target_tiles(map, source)
                 print(f"Target tiles are {[t.position for t in target_tiles if t.z_count>0]}")
                 tile_idx = int(input(f"Select target tile: "))
                 target_tile = map.tileset[tile_idx]
-                """
-                for tile in target_tiles:
-                    if tile.z_count>0:
-                        #print(tile.position, len([c.character_type=="z" for c in tile.contains if c.is_alive]), tile.z_count)
-                        target_tile = tile
-                        break
-                """
-                #print(f"Target tile is Tile {target_tile.position}")
-                for _ in range(effect_potency):
+                for _ in range(effect_potency["nb_attacks"]):
                     potential_targets = [t for t in target_tile.contains if t.character_type =="z"]
                     if len(potential_targets) > 0:
                         target = random.choice(potential_targets)
-                        print(f"{source.name} attacks {target.name} !")
-                        target.lose_hp(1)
+                        try_attack(source, target, effect_potency["hit_chance"])
                     else: 
-                        print("attack misses !")
+                        print("No more zombies !")
+            
+            if effect_key == "ranged_attack":
+                target_tiles = get_ranged_target_tiles(map, source, effect_potency["range"])
+                print(f"Target tiles are {[t.position for t in target_tiles if t.z_count>0]}")
+                tile_idx = int(input(f"Select target tile: "))
+                target_tile = map.tileset[tile_idx]
+                for _ in range(effect_potency["nb_attacks"]):
+                    potential_targets = [t for t in target_tile.contains if t.character_type =="z"]
+                    if len(potential_targets) > 0:
+                        target = random.choice(potential_targets)
+                        try_attack(source, target, effect_potency["hit_chance"])
+                    else: 
+                        print("No more zombies !")
             
             if effect_key=="move":
                 # TODO: select target tile here
-                tile_choices = map.tileset[max(source.position.position-effect_potency,0):source.position.position] + map.tileset[source.position.position+1:min(map.size-1,source.position.position+effect_potency)+1] 
+                tile_choices = get_ranged_target_tiles(map, source, effect_potency)
                 print(f"{source.name} can move to: ",[f"{t.position}" for t in tile_choices])
                 tile_idx = int(input(f"Select target tile: "))
                 #target_tile = random.choice(tile_choices)
@@ -74,6 +108,17 @@ class Card:
             if effect_key=="exit":
                 map.player_exit = True
                 print(f"{source.name} is leaving !")
+
+            if effect_key=="defend":
+                source.armor_points += effect_potency
+                print(f"{source.name} is armored !")
+    
+            if effect_key=="heal":
+                if source.health_points < source.max_health_points:
+                    source.health_points += effect_potency
+                    print(f"{source.name} is healed !")
+                else:
+                    print(f"{source.name} is already max heatlh !")
             
         source.deck.discard_card(self)
 
@@ -83,23 +128,26 @@ class Deck:
         self.available_cards = []
         self.discarded_cards = []
         self.burned_cards = []
+        self.weapon_cards = {}
     
     def load_deck_from_json(self, json_deck_path):
-        with open(json_deck_path) as json_deck_file:
-            json_deck = json.load(json_deck_file)
-        self.deck_name = json_deck["deck_name"]
-        for card_id, json_card in enumerate(json_deck["cards"]):
-            new_card = Card(card_id=card_id,
-                            title=json_card["title"],
-                            card_type=json_card["card_type"],
-                            cost=json_card["cost"],
-                            effects=json_card["effects"],
-                            description=json_card["description"])
-            self.available_cards.append(new_card)
-            self.deck_size += 1
+            new_cards = get_cards_from_json(json_deck_path)
+            self.available_cards = new_cards
+            self.deck_size = len(self.available_cards)
+
+    def add_weapon_cards(self, weapon, weapon_deck_path):
+        weapon_card_list = get_cards_from_json(weapon_deck_path)
+        self.available_cards += weapon_card_list
+        self.weapon_cards[weapon] = weapon_card_list
+        self.deck_size = len(self.available_cards)
+
+    def remove_weapon_cards(self, weapon):
+        weapon_card_list = self.weapon_cards[weapon]
+        for card in weapon_card_list:
+            self.available_cards.remove(card)
+        self.deck_size = len(self.available_cards)
 
     def show(self):
-        print(f"Deck {self.deck_name}:")
         for card in self.available_cards:
             print(f"   Card {card.title} (c:{card.base_cost}, {card.card_type}, effects:{card.description}) is available (id {card.card_id})")
         for card in self.discarded_cards:
