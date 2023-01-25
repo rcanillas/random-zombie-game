@@ -1,1 +1,8 @@
-__pycache__
+# MacOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.mypy_cache
+.venv

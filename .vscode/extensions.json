@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "davidanson.vscode-markdownlint",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "mhutchie.git-graph",
+    "ms-python.python",
+    "tamasfe.even-better-toml",
+    "vscode-icons-team.vscode-icons"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "deck_name": "Survivor",
+  "deck_type": "skills",
+  "cards": [
+    {
+      "title": "Rush",
+      "card_type": "movement",
+      "cost": 1,
+      "effects": {
+        "move": 2,
+        "noise": 1
+      },
+      "description": "Rush up to 2 tiles. Make noise."
+    },
+    {
+      "title": "Step",
+      "card_type": "movement",
+      "cost": 1,
+      "effects": {
+        "move": 1
+      },
+      "description": "Move 1 tile."
+    },
+    {
+      "title": "Scavenge",
+      "card_type": "loot",
+      "cost": 1,
+      "effects": {
+        "loot": 1
+      },
+      "description": "Look around for useful supplies."
+    },
+    {
+      "title": "Noisy loot",
+      "card_type": "loot",
+      "cost": 1,
+      "effects": {
+        "loot": 2,
+        "noise": 1
+      },
+      "description": "Search quickly but noisily for some loot."
+    },
+    {
+      "title": "Brace",
+      "card_type": "defense",
+      "cost": 1,
+      "effects": {
+        "defend": 1
+      },
+      "description": "Brace yourself against an attack."
+    },
+    {
+      "title": "Improvised bandage",
+      "card_type": "heal",
+      "cost": 2,
+      "effects": {
+        "heal": 1
+      },
+      "description": "Strap some spare tissue on a wound. Heal a bit.",
+      "is_burnt": "True"
+    }
+  ]
+}
