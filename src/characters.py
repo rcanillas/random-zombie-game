@@ -62,7 +62,6 @@ class PlayableCharacter(Actor):
         self.deck = Deck()
         self.handsize = DEFAULT_HANDSIZE
         self.character_type = "p"
-        self.position.append(self)
         self.inventory = []
         self.inventory_size = DEFAULT_INV_SIZE
         self.weapons = []

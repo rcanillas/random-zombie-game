@@ -1,5 +1,6 @@
-from characters import Zombie
 import random
+from characters import Zombie
+
 
 DEFAULT_MAP_SIZE = 6
 DEFAULT_NB_SPAWN = 2
@@ -26,8 +27,8 @@ class Tile:
             self.z_count += 1
 
 
-class Map:
-    def __init__(self, size=DEFAULT_MAP_SIZE, orientation="right") -> None:
+class Encounter:
+    def __init__(self, size=DEFAULT_MAP_SIZE, orientation="right",min_turn_count=3) -> None:
         self.size = size
         self.tileset = [Tile(pos) for pos in range(size)]
         self.orientation = orientation
@@ -47,6 +48,12 @@ class Map:
                 tile.loot_modifier = size - tile.position - DEFAULT_LOOT_MALUS
         self.danger_meter = 0
         self.global_z_count = 0
+        self.min_turn_count = min_turn_count
+
+    def init_position(self, character):
+        init_position =  self.tileset[0] if self.orientation=="right" else self.tileset[self.size-1]
+        init_position.append(character)
+        return init_position
 
     def update_position(self, actor, steps):
         actor.position.remove(actor)

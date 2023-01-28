@@ -27,6 +27,56 @@ def get_ranged_target_tiles(map, source, range):
     )
 
 
+def get_playable_cards(hand, player, encounter, turn_count):
+    i = 1
+    have_exit_card = "Exit" in [c.title for c in hand]
+    if player.position.is_exit and turn_count >= encounter.min_turn_count and not have_exit_card:
+        hand.append(player.deck.get_exit_card())
+    print(
+        f"Cards to play (remaining AP:{player.action_points}) (loot modifer: {player.position.loot_modifier}):"
+    )
+    for card in hand:
+        card.is_playable = True
+        if card.card_type == "movement":
+            card.current_cost = card.base_cost
+            card.current_cost += player.position.z_count
+        elif card.card_type == "melee_attack":
+            z_found = False
+            for tile in get_melee_target_tiles(encounter, player):
+                if tile.z_count > 0:
+                    z_found = True
+            if z_found:
+                card.is_playable = True
+            else:
+                card.is_playable = False
+        elif card.card_type == "ranged_attack":
+            z_found = False
+            range = card.effects["ranged_attack"]["range"]
+            for tile in get_ranged_target_tiles(encounter, player, range):
+                if tile.z_count > 0:
+                    z_found = True
+            if z_found:
+                card.is_playable = True
+            else:
+                card.is_playable = False
+        elif card.card_type == "loot":
+            if player.position.z_count > 0:
+                card.is_playable = False
+            if player.position.loot_modifier + card.effects["loot"] <= 0:
+                card.is_playable = False
+        elif card.card_type == "heal":
+            if player.health_points >= player.max_health_points:
+                card.is_playable = False
+        if card.current_cost > player.action_points:
+            card.is_playable = False
+        print(
+            f"{i} - {card.title} ({card.current_cost} ap (base {card.base_cost})): {card.description} ({card.card_id}) - playable:{card.is_playable}"
+        )
+        i += 1
+
+    return [c for c in hand if c.is_playable]
+
+
 def try_attack(source, target, hit_chance):
     hit_roll = random.random()
     # print(hit_roll, hit_chance/100)
@@ -37,7 +87,7 @@ def try_attack(source, target, hit_chance):
         print(f"Attack missed !")
 
 
-def get_cards_from_json(json_deck_path: str):
+def get_cards_from_json(json_deck_path):
     card_list = []
 
     dirname = os.path.dirname(__file__)
