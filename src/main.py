@@ -1,5 +1,4 @@
 import pygame
-import random
 
 from characters import PlayableCharacter
 from cards import get_melee_target_tiles, get_ranged_target_tiles
@@ -43,6 +42,8 @@ def get_playable_cards(hand, player, map, turn_count):
         elif card.card_type == "loot":
             if player.position.z_count > 0:
                 card.is_playable = False
+            if player.position.loot_modifier + card.effects["loot"] <= 0:
+                card.is_playable = False
         elif card.card_type == "heal":
             if player.health_points >= player.max_health_points:
                 card.is_playable = False
@@ -78,7 +79,8 @@ while player.is_alive and (not map.player_exit):
     card_min_cost = min([c.current_cost for c in player_hand])
     while player.action_points >= card_min_cost and len(player_hand) != 0:
         if len(playable_hand) > 0:
-            card_idx = input(f"Select a card [1-{len(player_hand)}] (p to end turn): ")
+            card_idx = input(
+                f"Select a card [1-{len(player_hand)}] (p to end turn): ")
             # selected_card = random.choice(playable_hand)
             if card_idx != "p":
                 selected_card = player_hand[int(card_idx) - 1]
