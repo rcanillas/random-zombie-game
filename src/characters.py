@@ -12,11 +12,12 @@ DEFAULT_Z_MOVE = 1
 DEFAULT_Z_HP = 1
 DEFAULT_Z_AP = 1
 
-class Actor :
+
+class Actor:
     def __init__(self, name, health_points, action_points, position) -> None:
         self.name = name
         self.armor_points = DEFAULT_ARMOR
-        self.health_points = health_points 
+        self.health_points = health_points
         self.action_points = action_points
         self.max_health_points = DEFAULT_P_HP
         self.max_action_points = DEFAULT_P_AP
@@ -26,29 +27,34 @@ class Actor :
 
     def lose_hp(self, lost_hp):
         print(f"{self.name} is hit !")
-        if self.armor_points - lost_hp >= 0 :
+        if self.armor_points - lost_hp >= 0:
             self.armor_points = self.armor_points - lost_hp
             print(f"The armor protects {self.name}")
-        else: 
-            lost_hp = abs(self.armor_points - lost_hp) 
+        else:
+            lost_hp = abs(self.armor_points - lost_hp)
 
-        self.health_points = max(self.health_points-lost_hp, 0)         
+        self.health_points = max(self.health_points - lost_hp, 0)
         if self.health_points <= 0:
             print(f"{self.name} is dead...")
             self.is_alive = False
             self.position.remove(self)
 
     def move(self, steps, target_tile, map):
-        direction = "left" if self.position.position-target_tile.position > 0 else "right"
+        direction = (
+            "left" if self.position.position - target_tile.position > 0 else "right"
+        )
         if direction == "left":
             steps = -steps
         self.position = map.update_position(self, steps)
 
     def show(self):
         if self.is_alive:
-            print(f"{self.name} is on Tile {self.position.position} with {self.health_points} hp and {self.action_points} ap")
+            print(
+                f"{self.name} is on Tile {self.position.position} with {self.health_points} hp and {self.action_points} ap"
+            )
         else:
             print(f"{self.name} is dead on Tile {self.position.position}")
+
 
 class PlayableCharacter(Actor):
     def __init__(self, name, health_points, action_points, position) -> None:
@@ -78,14 +84,16 @@ class PlayableCharacter(Actor):
         self.weapons.remove(weapon)
         self.deck.remove_weapon_cards(weapon)
 
-    
     def draw_hand(self):
         self.replenish_ap(self.max_action_points)
         self.hand = self.deck.draw(self.handsize)
         return self.hand
 
+
 class Zombie(Actor):
-    def __init__(self, name, position, health_points = DEFAULT_Z_HP, action_points=DEFAULT_Z_AP) -> None:
+    def __init__(
+        self, name, position, health_points=DEFAULT_Z_HP, action_points=DEFAULT_Z_AP
+    ) -> None:
         super().__init__(name, health_points, action_points, position)
         self.character_type = "z"
         self.position.append(self)
@@ -101,6 +109,6 @@ class Zombie(Actor):
                 self.attack(player)
             else:
                 print(f"{self.name} is moving towards the player !")
-                self.move(DEFAULT_Z_MOVE, player_position,map)
+                self.move(DEFAULT_Z_MOVE, player_position, map)
         else:
             print(f"{self.name} is feasting on the corpse.")
