@@ -29,6 +29,7 @@ class Campaign:
         turn_count = 1
         encounter = Encounter()
         self.player.position = encounter.init_position(self.player)
+        self.player.armor_points = 0
         while self.player.is_alive:
             print(f"Turn {turn_count} - Player turn")
             player_hand = self.player.draw_hand()
@@ -80,8 +81,10 @@ class Campaign:
     def prepare_next_encounter(self):
         if not self.player.is_alive:
             print(f"{self.player.name} is dead. Game over.")
-            return None
+            return False
         else:
             for loot in self.player.inventory:
                 self.player_stash[loot] += 1
             print(f"{self.player.name} stash is now: ", self.player_stash)
+            self.player.inventory = []
+        return True

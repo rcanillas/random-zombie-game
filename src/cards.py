@@ -69,6 +69,9 @@ def get_playable_cards(hand, player, encounter, turn_count):
                 card.is_playable = False
         if card.current_cost > player.action_points:
             card.is_playable = False
+        if card.title == "Exit":
+            if not player.position.is_exit:
+                card.is_playable = False
         print(
             f"{i} - {card.title} ({card.current_cost} ap (base {card.base_cost})): {card.description} ({card.card_id}) - playable:{card.is_playable}"
         )
@@ -87,7 +90,7 @@ def try_attack(source, target, hit_chance):
         print(f"Attack missed !")
 
 
-def get_cards_from_json(json_deck_path):
+def get_cards_from_json(json_deck_path: str):
     card_list = []
 
     dirname = os.path.dirname(__file__)
@@ -124,6 +127,7 @@ class Card:
         self.is_burnt = False
         self.graphic = None
         self.is_playable = True
+        self.is_unstable = False
 
     def activate(self, source, map):
         for effect_key, effect_potency in self.effects.items():
@@ -288,5 +292,6 @@ class Deck:
             description="Get out of here !",
         )
         exit_card.is_burnt == True
+        exit_card.is_unstable == True
         self.available_cards.append(exit_card)
         return exit_card
