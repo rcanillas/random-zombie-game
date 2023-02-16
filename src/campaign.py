@@ -1,15 +1,22 @@
 from encounter import Encounter
 from cards import get_playable_cards
 
+import random
+
+
 INIT_FOOD = 2
 INIT_GAS = 2
 INIT_SCRAP = 0
+
+location_list = ["silent hospital","spooky garage","abandoned building","deserted house","decrepit hangar"]
 
 class Campaign:
     
     def __init__(self, player, seed=42):
         self.player = player
         self.player_stash = {"food":INIT_FOOD, "gas":INIT_GAS, "scrap":INIT_SCRAP}
+        self.encounter_id = 1
+        random.seed = seed
 
     def init_campaign(self, skills_starter_decks, weapon_starter_decks):
         print("Available survivor decks:" , [(deck[0]+1, deck[1]["name"]) for deck in enumerate(skills_starter_decks)])
@@ -22,12 +29,12 @@ class Campaign:
         self.player.equip_weapon(weapon_deck["name"], weapon_deck["path"])
         print("You have the following cards :")
         self.player.deck.show()
-        return self
+        first_encounter = Encounter(id=self.encounter_id)
+        return first_encounter
 
-    def start_encounter(self, encounter_id):
-        f"Starting Encounter {encounter_id}"
+    def start_encounter(self, encounter):
+        f"Starting Encounter {encounter.id}"
         turn_count = 1
-        encounter = Encounter()
         self.player.position = encounter.init_position(self.player)
         self.player.armor_points = 0
         while self.player.is_alive:
@@ -79,12 +86,26 @@ class Campaign:
         return self.player
 
     def prepare_next_encounter(self):
+        for loot in self.player.inventory:
+            self.player_stash[loot] += 1
         if not self.player.is_alive:
             print(f"{self.player.name} is dead. Game over.")
-            return False
+            return None
+        elif self.player_stash["gas"] == 0 or self.player_stash["food"] == 0:
+            print(f"{self.player.name} ran out of supplies. The zombies overran him. Game over.")
         else:
             for loot in self.player.inventory:
                 self.player_stash[loot] += 1
             print(f"{self.player.name} stash is now: ", self.player_stash)
             self.player.inventory = []
-        return True
+            encounter_choices = []
+            for i in range(1,random.randint(2,6)):
+                encounter_choices.append(Encounter(id=self.encounter_id+i,location=random.choice(location_list)))
+            print(f"{self.player.name} can move to (traveling costs 1 food, 1 gas):")
+            for encouter_temp_id, encounter in enumerate(encounter_choices):
+                print("    ", encouter_temp_id+1, encounter.location)
+            next_encounter_id = input(f"select the next encounter [1-{len(encounter_choices)}]: ")
+            self.player_stash["food"] -= 1
+            self.player_stash["gas"] -= 1
+            next_encounter = encounter_choices[int(next_encounter_id)-1]
+            return next_encounter
