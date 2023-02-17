@@ -29,7 +29,15 @@ class Tile:
 
 
 class Encounter:
-    def __init__(self, id,location=DEFAULT_LOCATION,size=DEFAULT_MAP_SIZE, orientation="right",min_turn_count=3) -> None:
+    def __init__(
+        self,
+        id,
+        location=DEFAULT_LOCATION,
+        size=DEFAULT_MAP_SIZE,
+        orientation="right",
+        min_turn_count=3,
+        difficulty=1,
+    ) -> None:
         self.size = size
         self.tileset = [Tile(pos) for pos in range(size)]
         self.orientation = orientation
@@ -52,24 +60,22 @@ class Encounter:
         self.min_turn_count = min_turn_count
         self.id = id
         self.location = location
+        self.difficulty = difficulty
 
     def init_position(self, character):
-        init_position =  self.tileset[0] if self.orientation=="right" else self.tileset[self.size-1]
+        init_position = (
+            self.tileset[0]
+            if self.orientation == "right"
+            else self.tileset[self.size - 1]
+        )
         init_position.append(character)
         return init_position
 
-    def update_position(self, actor, steps):
+    def update_position(self, actor, target_tile):
         actor.position.remove(actor)
-        if (actor.position.position + steps) >= self.size:
-            new_position_idx = self.size
-        elif (actor.position.position + steps) <= 0:
-            new_position_idx = 0
-        else:
-            new_position_idx = actor.position.position + steps
-        new_position = self.tileset[new_position_idx]
-        new_position.append(actor)
+        target_tile.append(actor)
         # print(f"Tile {new_position.position} contains {new_position.z_count} zombies")
-        return new_position
+        return target_tile
 
     def get_player_position(self):
         player_tile = None
@@ -80,6 +86,16 @@ class Encounter:
                     player_tile = tile
                     player = actor
         return player_tile, player
+
+    def spawn_zombie(self, tile):
+        new_zombie = Zombie(
+            f"zombie {self.global_z_count}",
+            health_points=self.difficulty,
+            position=tile,
+        )
+        self.zombie_list.append(new_zombie)
+        self.global_z_count += 1
+        return new_zombie
 
     def spawn_zombies(self):
         spawn_tiles = [tile for tile in self.tileset if tile.is_spawn == True]
@@ -108,10 +124,8 @@ class Encounter:
                     idx_tile = min([t.position for t in min_tiles])
                 spawn_tile = self.tileset[idx_tile]
 
-            new_zombie = Zombie(f"zombie {self.global_z_count}", spawn_tile)
+            new_zombie = self.spawn_zombie(spawn_tile)
             print(f"{new_zombie.name} is spawning on Tile {spawn_tile.position}")
-            self.global_z_count += 1
-            self.zombie_list.append(new_zombie)
         print(
             f"D: {self.danger_meter}",
             [
@@ -120,9 +134,3 @@ class Encounter:
             ],
         )
         return self.zombie_list
-
-    def spawn_zombie(self, tile):
-        new_zombie = Zombie(f"zombie {self.global_z_count}", tile)
-        self.zombie_list.append(new_zombie)
-        self.global_z_count += 1
-        return new_zombie

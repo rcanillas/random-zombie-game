@@ -8,7 +8,7 @@ DEFAULT_P_HP = 3
 DEFAULT_INV_SIZE = 4
 
 DEFAULT_Z_ATTACK = 1
-DEFAULT_Z_MOVE = 1
+DEFAULT_Z_SPEED = 1
 DEFAULT_Z_HP = 1
 DEFAULT_Z_AP = 1
 
@@ -39,13 +39,8 @@ class Actor:
             self.is_alive = False
             self.position.remove(self)
 
-    def move(self, steps, target_tile, map):
-        direction = (
-            "left" if self.position.position - target_tile.position > 0 else "right"
-        )
-        if direction == "left":
-            steps = -steps
-        self.position = map.update_position(self, steps)
+    def move(self, target_tile, map):
+        self.position = map.update_position(self, target_tile)
 
     def show(self):
         if self.is_alive:
@@ -91,10 +86,16 @@ class PlayableCharacter(Actor):
 
 class Zombie(Actor):
     def __init__(
-        self, name, position, health_points=DEFAULT_Z_HP, action_points=DEFAULT_Z_AP
+        self,
+        name,
+        position,
+        health_points=DEFAULT_Z_HP,
+        action_points=DEFAULT_Z_AP,
+        speed=DEFAULT_Z_SPEED,
     ) -> None:
         super().__init__(name, health_points, action_points, position)
         self.character_type = "z"
+        self.speed = speed
         self.position.append(self)
 
     def attack(self, target):
@@ -108,6 +109,23 @@ class Zombie(Actor):
                 self.attack(player)
             else:
                 print(f"{self.name} is moving towards the player !")
-                self.move(DEFAULT_Z_MOVE, player_position, map)
+                direction = (
+                    "left"
+                    if self.position.position - player_position.position > 0
+                    else "right"
+                )
+                if direction == "left":
+                    target_tile = (
+                        map.tileset[self.position.position - self.speed]
+                        if self.position.position - self.speed >= 0
+                        else map.tileset[0]
+                    )
+                else:
+                    target_tile = (
+                        map.tileset[self.position.position + self.speed]
+                        if self.position.position - self.speed <= map.size
+                        else map.tileset[map.size]
+                    )
+                self.move(target_tile, map)
         else:
             print(f"{self.name} is feasting on the corpse.")

@@ -1,0 +1,39 @@
+{
+  "deck_name": "Sawed-off shotgun",
+  "deck_type": "weapon",
+  "weapon_grade":"silver",
+  "cards": [
+    {
+      "title": "Buckshot",
+      "card_type": "ranged_attack",
+      "cost": 2,
+      "effects": {
+        "ranged_attack": { "nb_attacks": 2, "range": 1, "hit_chance": 75 },
+        "noise": 1,
+        "push":1
+      },
+      "description": "Unload the two barrels."
+    },
+    {
+      "title": "Barrel Shot",
+      "card_type": "ranged_attack",
+      "cost": 1,
+      "effects": {
+        "ranged_attack": { "nb_attacks": 1, "range": 1, "hit_chance": 75 },
+        "noise": 1,
+        "push":1
+      },
+      "description": "Shot at close range."
+    },
+    {
+      "title": "Cross thump",
+      "card_type": "melee_attack",
+      "cost": 1,
+      "effects": {
+        "ranged_attack": { "nb_attacks": 1, "hit_chance": 85 },
+        "noise": 0
+      },
+      "description": "Bump a zombie with the butt of the shotgun."
+    }
+  ]
+}

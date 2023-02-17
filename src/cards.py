@@ -30,7 +30,11 @@ def get_ranged_target_tiles(map, source, range):
 def get_playable_cards(hand, player, encounter, turn_count):
     i = 1
     have_exit_card = "Exit" in [c.title for c in hand]
-    if player.position.is_exit and turn_count >= encounter.min_turn_count and not have_exit_card:
+    if (
+        player.position.is_exit
+        and turn_count >= encounter.min_turn_count
+        and not have_exit_card
+    ):
         hand.append(player.deck.get_exit_card())
     print(
         f"Cards to play (remaining AP:{player.action_points}) (loot modifer: {player.position.loot_modifier}):"
@@ -83,11 +87,12 @@ def get_playable_cards(hand, player, encounter, turn_count):
 def try_attack(source, target, hit_chance):
     hit_roll = random.random()
     # print(hit_roll, hit_chance/100)
-    if random.random() <= hit_chance / 100:
+    if hit_roll <= hit_chance / 100:
         print(f"{source.name} performs an attack on {target.name} !")
-        target.lose_hp(1)
+        return True
     else:
         print(f"Attack missed !")
+        return False
 
 
 def get_skill_cards_from_json(json_deck_path: str):
@@ -114,6 +119,7 @@ def get_skill_cards_from_json(json_deck_path: str):
         card_list.append(new_card)
     return card_list
 
+
 def get_weapon_cards_from_json(json_deck_path: str):
     card_list = []
 
@@ -139,6 +145,15 @@ def get_weapon_cards_from_json(json_deck_path: str):
     return card_list
 
 
+def push_target(target, map, potency):
+    if map.orientation == "right":
+        target_tile = map.tileset[max(target.position.position + potency, map.size)]
+    else:
+        target_tile = map.tileset[max(target.position.position - potency, 0)]
+    print(f"{target.name} is pushed {potency} tiles away !")
+    map.update_position(target, target_tile)
+
+
 class Card:
     def __init__(self, card_id, card_type, title, cost, effects, description) -> None:
         self.card_id = card_id
@@ -154,8 +169,8 @@ class Card:
         self.is_unstable = False
 
     def activate(self, source, map):
+        add_push = "push" in self.effects.keys()
         for effect_key, effect_potency in self.effects.items():
-
             if effect_key == "melee_attack":
                 target_tiles = get_melee_target_tiles(map, source)
                 print(
@@ -169,7 +184,13 @@ class Card:
                     ]
                     if len(potential_targets) > 0:
                         target = random.choice(potential_targets)
-                        try_attack(source, target, effect_potency["hit_chance"])
+                        success = try_attack(
+                            source, target, effect_potency["hit_chance"]
+                        )
+                        if success:
+                            target.lose_hp(1)
+                            if add_push:
+                                push_target(target, map, self.effects["push"])
                     else:
                         print("No more zombies !")
 
@@ -203,7 +224,7 @@ class Card:
                 # target_tile = random.choice(tile_choices)
                 target_tile = map.tileset[tile_idx]
                 print(f"{source.name} is moving to Tile {target_tile.position}")
-                source.move(effect_potency, target_tile, map)
+                source.move(target_tile, map)
 
             if effect_key == "loot":
                 effect_modifier = source.position.loot_modifier

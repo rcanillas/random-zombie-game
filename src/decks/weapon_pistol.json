@@ -1,6 +1,7 @@
 {
   "deck_name": "Pistol",
   "deck_type": "weapon",
+  "weapon_grade":"bronze",
   "cards": [
     {
       "title": "Shoot",

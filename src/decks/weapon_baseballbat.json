@@ -1,6 +1,7 @@
 {
   "deck_name": "Baseball Bat",
   "deck_type": "weapon",
+  "weapon_grade":"bronze",
   "cards": [
     {
       "title": "Strike",
