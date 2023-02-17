@@ -254,8 +254,10 @@ class Card:
                     print(f"{source.name} is healed !")
                 else:
                     print(f"{source.name} is already max heatlh !")
-
-        source.deck.discard_card(self)
+        if self.is_burnt:
+            source.deck.burn_card(self)
+        else:
+            source.deck.discard_card(self)
 
 
 class Deck:
@@ -318,11 +320,13 @@ class Deck:
         # print(len(drawn_cards))
         return drawn_cards
 
-    def discard_card(self, card):
-        # print(card.title, card.card_id)
-        # print([c.card_id for c in self.available_cards])
+    def burn_card(self, card):
         self.available_cards.remove(card)
-        if card.is_burnt:
+        self.burned_cards.append(card)
+
+    def discard_card(self, card):
+        self.available_cards.remove(card)
+        if card.is_unstable:
             self.burned_cards.append(card)
         else:
             self.discarded_cards.append(card)

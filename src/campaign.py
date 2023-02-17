@@ -85,7 +85,7 @@ class Campaign:
                                 selected_card, encounter
                             )
                             if encounter.player_exit:
-                                return self.player
+                                return True
                             playable_hand = get_playable_cards(
                                 player_hand, self.player, encounter, turn_count
                             )
@@ -110,8 +110,9 @@ class Campaign:
                 else:
                     encounter.zombie_list.remove(zombie)
             encounter.spawn_zombies()
+
             turn_count += 1
-        return self.player
+        return False
 
     def prepare_next_encounter(self):
         for loot in self.player.inventory:
