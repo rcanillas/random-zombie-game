@@ -90,7 +90,31 @@ def try_attack(source, target, hit_chance):
         print(f"Attack missed !")
 
 
-def get_cards_from_json(json_deck_path: str):
+def get_skill_cards_from_json(json_deck_path: str):
+    card_list = []
+
+    dirname = os.path.dirname(__file__)
+    path = os.path.join(dirname, json_deck_path)
+
+    with open(path) as json_deck_file:
+        json_deck = json.load(json_deck_file)
+    deck_name = json_deck["deck_name"]
+    print(f"loading deck {deck_name}")
+    for card_id, json_card in enumerate(json_deck["starter"]["cards"]):
+        new_card = Card(
+            card_id=card_id,
+            title=json_card["title"],
+            card_type=json_card["card_type"],
+            cost=json_card["cost"],
+            effects=json_card["effects"],
+            description=json_card["description"],
+        )
+        if "is_burnt" in json_card.keys():
+            new_card.is_burnt = json_card["is_burnt"]
+        card_list.append(new_card)
+    return card_list
+
+def get_weapon_cards_from_json(json_deck_path: str):
     card_list = []
 
     dirname = os.path.dirname(__file__)
@@ -222,12 +246,12 @@ class Deck:
         self.weapon_cards = {}
 
     def load_deck_from_json(self, json_deck_path):
-        new_cards = get_cards_from_json(json_deck_path)
+        new_cards = get_skill_cards_from_json(json_deck_path)
         self.available_cards = new_cards
         self.deck_size = len(self.available_cards)
 
     def add_weapon_cards(self, weapon, weapon_deck_path):
-        weapon_card_list = get_cards_from_json(weapon_deck_path)
+        weapon_card_list = get_weapon_cards_from_json(weapon_deck_path)
         self.available_cards += weapon_card_list
         self.weapon_cards[weapon] = weapon_card_list
         self.deck_size = len(self.available_cards)
