@@ -110,11 +110,14 @@ class Campaign:
                 else:
                     encounter.zombie_list.remove(zombie)
             encounter.spawn_zombies()
-
+            for cards in self.player.deck.available_cards:
+                if cards.is_unstable:
+                    self.player.
             turn_count += 1
         return False
 
     def prepare_next_encounter(self):
+        self.player.deck.reset_deck()
         for loot in self.player.inventory:
             self.player_stash[loot] += 1
         print(f"{self.player.name} stash is now: ", self.player_stash)

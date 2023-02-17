@@ -320,6 +320,12 @@ class Deck:
         # print(len(drawn_cards))
         return drawn_cards
 
+    def reset_deck(self):
+        for burned_card in self.burned_cards:
+            if not burned_card.is_unstable:
+                self.player.available_cards.append(burned_card)
+        self.burned_cards = []
+
     def burn_card(self, card):
         self.available_cards.remove(card)
         self.burned_cards.append(card)
