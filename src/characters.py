@@ -124,7 +124,7 @@ class Zombie(Actor):
                     target_tile = (
                         map.tileset[self.position.position + self.speed]
                         if self.position.position - self.speed <= map.size
-                        else map.tileset[map.size]
+                        else map.tileset[map.size - 1]
                     )
                 self.move(target_tile, map)
         else:

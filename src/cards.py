@@ -147,7 +147,7 @@ def get_weapon_cards_from_json(json_deck_path: str):
 
 def push_target(target, map, potency):
     if map.orientation == "right":
-        target_tile = map.tileset[max(target.position.position + potency, map.size)]
+        target_tile = map.tileset[max(target.position.position + potency, map.size - 1)]
     else:
         target_tile = map.tileset[max(target.position.position - potency, 0)]
     print(f"{target.name} is pushed {potency} tiles away !")
@@ -323,7 +323,7 @@ class Deck:
     def reset_deck(self):
         for burned_card in self.burned_cards:
             if not burned_card.is_unstable:
-                self.player.available_cards.append(burned_card)
+                self.available_cards.append(burned_card)
         self.burned_cards = []
 
     def burn_card(self, card):

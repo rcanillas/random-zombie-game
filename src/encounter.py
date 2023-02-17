@@ -50,7 +50,7 @@ class Encounter:
             for tile in self.tileset:
                 tile.loot_modifier = tile.position - DEFAULT_LOOT_MALUS
         else:
-            self.tileset[size].is_exit = True
+            self.tileset[size - 1].is_exit = True
             for i in range(0, DEFAULT_NB_SPAWN - 1):
                 self.tileset[i].is_spawn = True
             for tile in self.tileset:

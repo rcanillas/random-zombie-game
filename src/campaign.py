@@ -115,18 +115,19 @@ class Campaign:
 
     def prepare_next_encounter(self):
         self.player.deck.reset_deck()
-        for loot in self.player.inventory:
-            self.player_stash[loot] += 1
-        print(f"{self.player.name} stash is now: ", self.player_stash)
-        self.player.inventory = []
         if not self.player.is_alive:
             print(f"{self.player.name} is dead. Game over.")
             return None
-        elif self.player_stash["gas"] <= 0 or self.player_stash["food"] <= 0:
-            print(
-                f"{self.player.name} ran out of supplies. The zombies overran him. Game over."
-            )
         else:
+            for loot in self.player.inventory:
+                self.player_stash[loot] += 1
+            print(f"{self.player.name} stash is now: ", self.player_stash)
+            self.player.inventory = []
+            if self.player_stash["gas"] <= 0 or self.player_stash["food"] <= 0:
+                print(
+                    f"{self.player.name} ran out of supplies. The zombies overran him. Game over."
+                )
+                return None
             self.encounter_count += 1
             encounter_choices = []
             for i in range(1, random.randint(2, 6)):
@@ -135,7 +136,7 @@ class Campaign:
                         id=self.encounter_id + i,
                         location=random.choice(location_list),
                         difficulty=self.encounter_count,
-                        orientation=random.choice["left", "right"],
+                        orientation=random.choice(["left", "right"]),
                     )
                 )
             print(f"{self.player.name} can move to (traveling costs 1 food, 1 gas):")
