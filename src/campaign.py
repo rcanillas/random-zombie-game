@@ -110,9 +110,6 @@ class Campaign:
                 else:
                     encounter.zombie_list.remove(zombie)
             encounter.spawn_zombies()
-            for cards in self.player.deck.available_cards:
-                if cards.is_unstable:
-                    self.player.
             turn_count += 1
         return False
 
