@@ -25,15 +25,23 @@ class Actor:
         self.is_alive = True
         self.hand = []
 
-    def lose_hp(self, lost_hp):
-        print(f"{self.name} is hit !")
-        if self.armor_points - lost_hp >= 0:
-            self.armor_points = self.armor_points - lost_hp
+    def lose_armor(self, attack_potency):
+        print(f"{self.name} is hit on the armor !")
+        if self.armor_points - attack_potency >= 0:
+            self.armor_points = self.armor_points - attack_potency
             print(f"The armor protects {self.name}")
+            return 0
         else:
-            lost_hp = abs(self.armor_points - lost_hp)
-
-        self.health_points = max(self.health_points - lost_hp, 0)
+            remainder = attack_potency-self.armor_points
+            print(f"The armor is gone ! {remainder} hit point(s) goes through !")
+            return remainder
+    
+    def lose_hp(self, attack_potency):
+        if self.armor_points > 0:
+            health_hit = self.lose_armor(attack_potency)
+        else:
+            health_hit = attack_potency
+        self.health_points = max(self.health_points - health_hit, 0)
         if self.health_points <= 0:
             print(f"{self.name} is dead...")
             self.is_alive = False
@@ -61,8 +69,8 @@ class PlayableCharacter(Actor):
         self.inventory_size = DEFAULT_INV_SIZE
         self.weapons = []
 
-    def replenish_ap(self, ap):
-        self.action_points += ap
+    def replenish_ap(self):
+        self.action_points = self.max_action_points
 
     def play_card(self, card, map):
         card.activate(self, map)
@@ -79,7 +87,7 @@ class PlayableCharacter(Actor):
         self.deck.remove_weapon_cards(weapon)
 
     def draw_hand(self):
-        self.replenish_ap(self.max_action_points)
+        self.replenish_ap()
         self.hand = self.deck.draw(self.handsize)
         return self.hand
 
@@ -92,21 +100,23 @@ class Zombie(Actor):
         health_points=DEFAULT_Z_HP,
         action_points=DEFAULT_Z_AP,
         speed=DEFAULT_Z_SPEED,
+        attack=DEFAULT_Z_ATTACK
     ) -> None:
-        super().__init__(name, health_points, action_points, position)
+        super().__init__(name, health_points, action_points, position,)
         self.character_type = "z"
         self.speed = speed
         self.position.append(self)
+        self.attack = attack
 
-    def attack(self, target):
-        target.lose_hp(DEFAULT_Z_ATTACK)
+    def attack_target(self, target):
+        target.lose_hp(self.attack)
 
     def perform_action(self, map):
         player_position, player = map.get_player_position()
         if player_position:
             if player_position.position == self.position.position:
                 print(f"{self.name} is attacking !")
-                self.attack(player)
+                self.attack_target(player)
             else:
                 print(f"{self.name} is moving towards the player !")
                 direction = (

@@ -29,6 +29,9 @@ def get_ranged_target_tiles(map, source, range):
 
 def get_playable_cards(hand, player, encounter, turn_count):
     i = 1
+    print("Available cards:", [c.title for c in player.deck.available_cards])
+    print("Discarded cards:", [c.title for c in player.deck.discarded_cards])
+    print("Burned cards:", [c.title for c in player.deck.burned_cards])
     have_exit_card = "Exit" in [c.title for c in hand]
     if (
         player.position.is_exit
@@ -321,9 +324,12 @@ class Deck:
         return drawn_cards
 
     def reset_deck(self):
+        print("resetting deck")
         for burned_card in self.burned_cards:
             if not burned_card.is_unstable:
                 self.available_cards.append(burned_card)
+        self.available_cards += self.discarded_cards
+        self.discarded_cards = []
         self.burned_cards = []
 
     def burn_card(self, card):
@@ -346,7 +352,7 @@ class Deck:
             effects={"exit": 1},
             description="Get out of here !",
         )
-        exit_card.is_burnt == True
-        exit_card.is_unstable == True
+        exit_card.is_burnt = True
+        exit_card.is_unstable = True
         self.available_cards.append(exit_card)
         return exit_card
