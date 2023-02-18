@@ -1,0 +1,39 @@
+{
+  "deck_name": "Katana",
+  "deck_type": "weapon",
+  "weapon_grade": "gold",
+  "cards": [
+    {
+      "title": "Flurry of strikes",
+      "card_type": "melee_attack",
+      "cost": 1,
+      "effects": {
+        "melee_attack": { "nb_attacks": 5, "hit_chance": 70, "hit_points": 2 },
+        "noise": 0
+      },
+      "description": "Cut light the lightning."
+    },
+    {
+      "title": "Decapitation tornado",
+      "card_type": "melee_attack",
+      "cost": 2,
+      "effects": {
+        "ranged_attack": { "nb_attacks": 8, "hit_chance": 95, "hit_points": 4 },
+        "noise": 0
+      },
+      "description": "Aim for the head !"
+    },
+    {
+      "title": "Shadow slash",
+      "card_type": "movement",
+      "cost": 1,
+      "effects": {
+        "move": 2,
+        "melee_attack": { "nb_attacks": 4, "hit_chance": 75, "hit_points": 2 },
+        "noise": 0,
+        "push": 1
+      },
+      "description": "Step and cut a zombie."
+    }
+  ]
+}
