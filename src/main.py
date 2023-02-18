@@ -18,10 +18,10 @@ starter_weapons_decks = [
 ]
 first_encounter = campaign.init_campaign(starter_skills_decks, starter_weapons_decks)
 nb_encounters_success = 1
-campaign.start_encounter(first_encounter)
+#campaign.start_encounter(first_encounter)
 next_encounter = campaign.prepare_next_encounter()
 while next_encounter:
     print("----- New Encounter -----")
-    campaign.start_encounter(next_encounter)
+    #campaign.start_encounter(next_encounter)
     next_encounter = campaign.prepare_next_encounter()
 print(f"{player.name} survived {campaign.encounter_count} !")

@@ -79,8 +79,18 @@ class PlayableCharacter(Actor):
         return self.hand
 
     def equip_weapon(self, weapon, weapon_deck_path):
-        self.weapons.append(weapon)
-        self.deck.add_weapon_cards(weapon, weapon_deck_path)
+        if len(self.weapons) < 2:
+            self.weapons.append(weapon)
+            self.deck.add_weapon_cards(weapon, weapon_deck_path)
+        else:
+            print("You can only carry two weapons !  select a weapon to unequip")
+            for old_weapon_id, old_weapon in enumerate(self.weapons):
+                print(old_weapon_id+1, old_weapon)
+            old_weapon_id = int(input("Weapon id: "))-1
+            self.unequip_weapon(self.weapons[old_weapon_id])
+            self.weapons.append(weapon)
+            self.deck.add_weapon_cards(weapon, weapon_deck_path)
+
 
     def unequip_weapon(self, weapon):
         self.weapons.remove(weapon)

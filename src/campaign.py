@@ -1,11 +1,12 @@
 from encounter import Encounter
-from cards import get_playable_cards
+from cards import get_playable_cards, get_weapon_cards_from_json
+from loot import perform_forge
 
 import random
 
 INIT_FOOD = 2
 INIT_GAS = 2
-INIT_SCRAP = 0
+INIT_SCRAP = 2
 
 location_list = [
     "silent hospital",
@@ -14,7 +15,6 @@ location_list = [
     "deserted house",
     "decrepit hangar",
 ]
-
 
 class Campaign:
     def __init__(self, player):
@@ -128,6 +128,7 @@ class Campaign:
                     f"{self.player.name} ran out of supplies. The zombies overran him. Game over."
                 )
                 return None
+            self.get_updates()
             self.encounter_count += 1
             encounter_choices = []
             for i in range(1, random.randint(2, 6)):
@@ -141,6 +142,7 @@ class Campaign:
                 )
             print(f"{self.player.name} can move to (traveling costs 1 food, 1 gas):")
             for encouter_temp_id, encounter in enumerate(encounter_choices):
+                #TODO: difficulty increase HP or Damage or Number of zombies instead of just hp
                 print(
                     "    ",
                     encouter_temp_id + 1,
@@ -163,14 +165,6 @@ class Campaign:
         self.player.health_points = self.player.max_health_points
         return self
 
-    def perform_forge(self):
-        # player can "bet" scrap for chances to obtain a weapon.
-        # 3 categ of weapons - bronze silver gold
-        # More scrap bet = more chance to find a silver / gold weapon
-        # Weapon can be equipped immediatly (stored in armory if not ?)
-        # TODO: create 2 weapon cards for silver & gold (bronze are starter weapon for now)
-        return
-
     def perform_train(self):
         # player can choose between obtaining a new skill card or removing an existing one
         # new cards are found in the deck with 3 kind of rarity - common rare legendary
@@ -179,15 +173,34 @@ class Campaign:
         return
 
     def get_updates(self):
-        update_choice = input(
-            "Do you want to rest (1), forge a weapon (2) or train (3) ? (p) to pass."
-        )
-        if update_choice == "1":
-            self.perform_rest()
-        elif update_choice == "2":
-            self.perform_forge()
-        elif update_choice == "3":
-            self.perform_train()
+        if self.player_stash["scrap"] > 0:
+            update_choice = input(
+                "Do you want to rest (1), forge a weapon (2) or train (3) ? (p) to pass."
+            )
+            if update_choice == "1":
+                self.perform_rest()
+            elif update_choice == "2":
+                    print(f"{self.player.name} has {self.player_stash['scrap']} scrap(s). How much scrap do you want to forge ?")
+                    print(f"More scrap means better chances to get a good weapon.")
+                    scrap_amount = int(input(f"Enter amount of scrap (1-{min(self.player_stash['scrap'],10)})"))
+                    weapon_name, weapon_path = perform_forge(scrap_amount)
+                    self.player_stash['scrap'] -= scrap_amount
+                    print("looted weapon:",  weapon_name)
+                    print("weapon deck path: ", weapon_path)
+                    self.player.equip_weapon(weapon_name, weapon_path)          
+
+            elif update_choice == "3":
+                self.perform_train()
+            else:
+                pass
         else:
-            pass
+            update_choice = input(
+                "Do you want to rest (1) or train (2) ? (not enough scrap to forge...) (p) to pass."
+            )
+            if update_choice == "1":
+                self.perform_rest()
+            elif update_choice == "2":
+                self.perform_train()
+            else:
+                pass
         return self

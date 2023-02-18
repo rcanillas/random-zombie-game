@@ -1,36 +1,36 @@
 {
   "deck_name": "Sawed-off shotgun",
   "deck_type": "weapon",
-  "weapon_grade":"silver",
+  "weapon_grade": "silver",
   "cards": [
     {
       "title": "Buckshot",
       "card_type": "ranged_attack",
       "cost": 2,
       "effects": {
-        "ranged_attack": { "nb_attacks": 2, "range": 1, "hit_chance": 75 },
+        "ranged_attack": { "nb_attacks": 4, "range": 1, "hit_chance": 75, "hit_points": 1 },
         "noise": 1,
-        "push":1
+        "push": 1
       },
-      "description": "Unload the two barrels."
+      "description": "Unload the two barrels in a spray."
     },
     {
       "title": "Barrel Shot",
       "card_type": "ranged_attack",
       "cost": 1,
       "effects": {
-        "ranged_attack": { "nb_attacks": 1, "range": 1, "hit_chance": 75 },
+        "ranged_attack": { "nb_attacks": 1, "range": 1, "hit_chance": 75, "hit_points": 2 },
         "noise": 1,
-        "push":1
+        "push": 1
       },
-      "description": "Shot at close range."
+      "description": "Powerful shot at close range."
     },
     {
       "title": "Cross thump",
       "card_type": "melee_attack",
       "cost": 1,
       "effects": {
-        "ranged_attack": { "nb_attacks": 1, "hit_chance": 85 },
+        "melee_attack": { "nb_attacks": 1, "hit_chance": 85, "hit_points": 1 },
         "noise": 0
       },
       "description": "Bump a zombie with the butt of the shotgun."

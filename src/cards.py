@@ -191,7 +191,7 @@ class Card:
                             source, target, effect_potency["hit_chance"]
                         )
                         if success:
-                            target.lose_hp(1)
+                            target.lose_hp(effect_potency["hit_points"])
                             if add_push:
                                 push_target(target, map, self.effects["push"])
                     else:
@@ -213,6 +213,10 @@ class Card:
                     if len(potential_targets) > 0:
                         target = random.choice(potential_targets)
                         try_attack(source, target, effect_potency["hit_chance"])
+                        if success:
+                            target.lose_hp(effect_potency["hit_points"])
+                            if add_push:
+                                push_target(target, map, self.effects["push"])
                     else:
                         print("No more zombies !")
 
