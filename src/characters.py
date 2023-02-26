@@ -32,10 +32,10 @@ class Actor:
             print(f"The armor protects {self.name}")
             return 0
         else:
-            remainder = attack_potency-self.armor_points
+            remainder = attack_potency - self.armor_points
             print(f"The armor is gone ! {remainder} hit point(s) goes through !")
             return remainder
-    
+
     def lose_hp(self, attack_potency):
         if self.armor_points > 0:
             health_hit = self.lose_armor(attack_potency)
@@ -85,12 +85,11 @@ class PlayableCharacter(Actor):
         else:
             print("You can only carry two weapons !  select a weapon to unequip")
             for old_weapon_id, old_weapon in enumerate(self.weapons):
-                print(old_weapon_id+1, old_weapon)
-            old_weapon_id = int(input("Weapon id: "))-1
+                print(old_weapon_id + 1, old_weapon)
+            old_weapon_id = int(input("Weapon id: ")) - 1
             self.unequip_weapon(self.weapons[old_weapon_id])
             self.weapons.append(weapon)
             self.deck.add_weapon_cards(weapon, weapon_deck_path)
-
 
     def unequip_weapon(self, weapon):
         self.weapons.remove(weapon)
@@ -110,9 +109,14 @@ class Zombie(Actor):
         health_points=DEFAULT_Z_HP,
         action_points=DEFAULT_Z_AP,
         speed=DEFAULT_Z_SPEED,
-        attack=DEFAULT_Z_ATTACK
+        attack=DEFAULT_Z_ATTACK,
     ) -> None:
-        super().__init__(name, health_points, action_points, position,)
+        super().__init__(
+            name,
+            health_points,
+            action_points,
+            position,
+        )
         self.character_type = "z"
         self.speed = speed
         self.position.append(self)

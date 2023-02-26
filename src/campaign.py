@@ -16,6 +16,7 @@ location_list = [
     "decrepit hangar",
 ]
 
+
 class Campaign:
     def __init__(self, player):
         self.player = player
@@ -142,7 +143,7 @@ class Campaign:
                 )
             print(f"{self.player.name} can move to (traveling costs 1 food, 1 gas):")
             for encouter_temp_id, encounter in enumerate(encounter_choices):
-                #TODO: difficulty increase HP or Damage or Number of zombies instead of just hp
+                # TODO: difficulty increase HP or Damage or Number of zombies instead of just hp
                 print(
                     "    ",
                     encouter_temp_id + 1,
@@ -180,14 +181,20 @@ class Campaign:
             if update_choice == "1":
                 self.perform_rest()
             elif update_choice == "2":
-                    print(f"{self.player.name} has {self.player_stash['scrap']} scrap(s). How much scrap do you want to forge ?")
-                    print(f"More scrap means better chances to get a good weapon.")
-                    scrap_amount = int(input(f"Enter amount of scrap (1-{min(self.player_stash['scrap'],10)})"))
-                    weapon_name, weapon_path = perform_forge(scrap_amount)
-                    self.player_stash['scrap'] -= scrap_amount
-                    print("looted weapon:",  weapon_name)
-                    print("weapon deck path: ", weapon_path)
-                    self.player.equip_weapon(weapon_name, weapon_path)          
+                print(
+                    f"{self.player.name} has {self.player_stash['scrap']} scrap(s). How much scrap do you want to forge ?"
+                )
+                print(f"More scrap means better chances to get a good weapon.")
+                scrap_amount = int(
+                    input(
+                        f"Enter amount of scrap (1-{min(self.player_stash['scrap'],10)})"
+                    )
+                )
+                weapon_name, weapon_path = perform_forge(scrap_amount)
+                self.player_stash["scrap"] -= scrap_amount
+                print("looted weapon:", weapon_name)
+                print("weapon deck path: ", weapon_path)
+                self.player.equip_weapon(weapon_name, weapon_path)
 
             elif update_choice == "3":
                 self.perform_train()

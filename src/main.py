@@ -1,11 +1,8 @@
-import pygame
-
 from characters import PlayableCharacter
 from campaign import Campaign
 
 MIN_TURN_COUNT = 3
 
-pygame.init()
 player = PlayableCharacter(
     name="Darryl", health_points=3, action_points=0, position=None
 )
@@ -18,10 +15,10 @@ starter_weapons_decks = [
 ]
 first_encounter = campaign.init_campaign(starter_skills_decks, starter_weapons_decks)
 nb_encounters_success = 1
-#campaign.start_encounter(first_encounter)
+# campaign.start_encounter(first_encounter)
 next_encounter = campaign.prepare_next_encounter()
 while next_encounter:
     print("----- New Encounter -----")
-    #campaign.start_encounter(next_encounter)
+    # campaign.start_encounter(next_encounter)
     next_encounter = campaign.prepare_next_encounter()
 print(f"{player.name} survived {campaign.encounter_count} !")
